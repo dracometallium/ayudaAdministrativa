@@ -33,7 +33,7 @@ se deba modificar `/dev/video0` por otro dispositivo virtual.
     xmessage "Mover y ajustar esta ventana" &
     ./record_screen.sh
 
-Basado en [https://gist.github.com/anonymous/3927068](este código).
+Basado en [este código](https://gist.github.com/anonymous/3927068).
 
 ### listaFinal
 
