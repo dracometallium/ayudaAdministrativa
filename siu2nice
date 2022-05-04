@@ -1,0 +1,59 @@
+#!/bin/sh
+
+rango='
+BEGIN{
+    alumnos=0
+    FS="\t"
+}
+
+(!alumnos)&&/^ALUMNO/{
+    alumnos=1
+    next
+}
+
+(!alumnos){
+    next
+}
+
+{
+    print $0
+}
+'
+
+
+formato='
+BEGIN{
+    FS="\t"
+    OFS=FS
+}
+
+{
+    leg_orig = $2
+    gsub(/.*-/,"",$2)
+    num_leg = sprintf("%06d", $2)
+    gsub("  *", " ", $1)
+    gsub("^ ", "", $1)
+    $1 = tolower($1)
+    split($1, nombres, " ")
+    nc=""
+    for(i in nombres){
+        n = nombres[i]
+        sub(".", substr(toupper(n), 1,1) , n);
+        nc = (nc " " n)
+    }
+    print num_leg, nc, leg_orig
+}
+'
+
+tmpdir=$(mktemp -d)
+
+libreoffice --headless --convert-to tsv:"Text - txt - csv (StarCalc)":9,34,UTF-8 "$@" --outdir "$tmpdir" 1>&2
+
+for i in "$tmpdir"/*; do
+
+    from=$(file -b --mime-encoding "$i")
+    iconv -f $from -t "UTF-8" "$i" | awk "$rango"
+
+done | awk "$formato" | sort | uniq
+
+rm -rf "$tmpdir"
