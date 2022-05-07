@@ -41,6 +41,7 @@ BEGIN{
         sub(".", substr(toupper(n), 1,1) , n);
         nc = (nc " " n)
     }
+    gsub("^ ", "", nc)
     print num_leg, nc, leg_orig
 }
 '
