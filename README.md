@@ -24,13 +24,18 @@ formato de los resúmenes cuando se le da la gana.
 
 ### record_screen.sh
 
-`record_screen.sh` permite seleccionar una ventana y grabar el área de la
-pantalla donde esta ubicada. Para que funcione necesita que se cargue el
-modulo `v4l2loopback`. Si el sistema ya tiene una cámara web, es posible que
-se deba modificar `/dev/video0` por otro dispositivo virtual.
+`record_screen.sh` permite seleccionar un área de la pantalla para que sea
+grabada como una cámara web virtual.
+
+Para que funcione necesita que este cargado el modulo `v4l2loopback`. Si el
+sistema ya tiene una cámara web, es posible que se deba modificar
+`/dev/video0` por otro dispositivo virtual.
+
+Al ejecutar el script se abrirán dos ventanas. Mover la ventana que dice
+"Mover" hasta el área de la pantalla que se quiere grabar. Cuando la ventana
+este ubicada en el lugar correcto, presionar "Listo" en la otra ventana.
 
     sudo modprobe v4l2loopback
-    xmessage "Mover y ajustar esta ventana" &
     ./record_screen.sh
 
 Basado en [este código](https://gist.github.com/anonymous/3927068).
