@@ -52,4 +52,64 @@ recuperatorio correspondiente.
 
 # Eyegrade
 
-**TODO**
+## Instalación
+
+Ante problemas, consultar la documentación oficial de [eyegrade][eye_inst].
+Para `Debian` ejecutar los siguientes comandos:
+
+    sudo apt update
+    sudo apt dist-upgrade
+    sudo apt install v4l2loopback-utils ffmpeg \
+        python3 python3-pip python3-venv \
+        texlive texlive-latex-recommended \
+        texlive-latex-extra texlive-extra-utils \
+        zathura
+    export PATH="$PATH:$HOME/.local/bin"
+    pip install --user pipx
+    pipx install eyegrade
+
+Idealmente la linea `export PATH="$PATH:$HOME/.local/bin"` debería agregarse
+al `.profile`, ya que ahí es donde se instalan los ejecutables del `eyegrade`,
+y esa linea en particular se va a tener que repetir con frecuencia.
+
+[eye_inst]: https://www.eyegrade.org/doc/user-manual/#installation-on-gnu-linux
+
+## Creación de los exámenes
+
+Para crear los exámenes se deben crear dos archivos:
+
+-   `exam-questions.xml`: donde se especifican las preguntas y respuestas
+    correctas. Ver archivo de [ejemplo][eye_xml].
+
+-   `template.tex`: Este es un archivo de `LaTex` donde se especifica la
+    caratula y estructura del examen. Se agregan marcas especiales
+    (especificadas en [este documento][eye_template]) para indicar donde se
+    debe insertar la tabla de respuestas y la lista de preguntas.
+
+[eye_xml]: https://www.eyegrade.org/doc/user-manual/#editing-the-questions-of-the-exam
+[eye_template]: https://www.eyegrade.org/doc/user-manual/#editing-the-latex-template
+
+Para crear 3 modelos de examen (modelo *A*, *B* y *C*), y un modelo *0* que
+mantiene todas las preguntas y respuestas en el orden que aparecen en
+`exam-questions.xml`, ejecutar:
+
+    export PATH="$PATH:$HOME/.local/bin"
+    eyegrade-create -e exam-questions.xml -m 0ABC template.tex -o exam
+
+### Impresión
+
+Al imprimir un gran número de páginas se debe tener en cuenta que la memoria
+de trabajo de la impresora es reducida. Es suficiente como para mantener una
+sola hoja (ambas caras) a la vez, por lo que entre hoja y hoja, abra un
+retardo extra. Se recomienda imprimir todas las copias de una hoja (ambas
+caras) juntas, es decir, imprimir 80 copias de la primera hoja y luego 80 de
+la segunda hoja.
+
+Ademas, se recomienda probar con la impresión de un par de exámenes. Recordar
+chequear que sea visible el modelo en todas las hojas y que se este
+imprimiendo a doble faz. En nuestras pruebas, `okular` fallaba en esto último,
+recomiendo usar `zathura` (presionar `CRTL+p` para imprimir).
+
+## Evaluación
+
+**WIP**
