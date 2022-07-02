@@ -17,8 +17,7 @@ c="1"
 
 for i in "$@"; do
     cat "$i" |
-        awk 'BEGIN{ FS="\t"; OFS=FS }
-        { if($3=="P"){$3="A"}; print $1,$3 }' |
+        cut -d "$TAB" -f 1,3 |
         sort > "$tmpdir"/res"$c".csv
     c=$((c + 1))
 done
@@ -30,7 +29,9 @@ sort "$nombres" |
     join -t "$TAB" -e "-" -a 1 -a 2 -o "0 1.2 1.3 1.4 1.5 2.2" - "$tmpdir/"res4.csv | 
     awk 'BEGIN{ FS="\t"; OFS=FS }
     {
-        if(($3=="A"||$4=="A")&&($5=="A"||$6=="A")){
+        if(($3=="P")&&($5=="P")){
+            nota="PROMOCION"
+        } else if(($3=="P"||$3=="A"||$4=="A")&&($3=="P"||$5=="A"||$6=="A")){
             nota="APROBADO"
         } else if($3=="-"&&$4=="-"&&$5=="-"&&$6=="-"){
             nota="AUSENTE" 
