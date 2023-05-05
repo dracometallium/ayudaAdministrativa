@@ -65,8 +65,8 @@ Para `Debian` ejecutar los siguientes comandos:
         texlive-latex-extra texlive-extra-utils \
         zathura
     export PATH="$PATH:$HOME/.local/bin"
-    pip install --user pipx
-    pipx install eyegrade
+    sudo apt install pipx
+    pipx install eyegrade # Si no anda, cerrar el bash y volverlo a abrir
 
 Idealmente la linea `export PATH="$PATH:$HOME/.local/bin"` debería agregarse
 al `.profile`, ya que ahí es donde se instalan los ejecutables del `eyegrade`,
