@@ -7,7 +7,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 if [ -e "$1" ]; then
-    echo "Archivo $0 no encontrado." 1>&2
+    echo "Archivo $1 no encontrado." 1>&2
     exit 1
 fi
 
