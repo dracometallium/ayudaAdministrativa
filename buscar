@@ -1,0 +1,59 @@
+#!/bin/sh
+
+if [ "$#" -lt 1 ]; then
+    echo "Numero incorrecto de parametros" 1>&2
+    echo "Uso: $0 listaAlumnos" 1>&2
+    exit 1
+fi
+
+if [ -e "$1" ]; then
+    echo "Archivo $0 no encontrado." 1>&2
+    exit 1
+fi
+
+TAB=$(printf "\t")
+
+while read -r nombre; do
+    case "$nombre" in
+        "q"|"Q"|"quit"|"QUIT")
+            exit 0;;
+        "DELETE")
+            COLUMNS=$(tput cols)
+            LINES=$(tput lines)
+
+            for _ in $(seq 1 1000); do 
+                r1=$(od -An -N 2 -l /dev/urandom)
+                r2=$(od -An -N 2 -l /dev/urandom)
+                r3=$(od -An -N 2 -l /dev/urandom)
+                x=$((r1 % LINES + 1))
+                y=$((r2 % COLUMNS + 1)) 
+                c=$((r3 % 8)) 
+                printf '\033[%d;%df\033[3%dm!DELETE!' "$x" "$y" "$c"
+                sleep 0.001
+            done
+            sleep 5
+            clear
+            printf "\033[0m\n\njaja,\n\tmentira.\n"
+            sleep 3
+        ;;
+        *)
+            result=$(
+                iconv -t ASCII//TRANSLIT "$1" |
+                    grep -i -e "$TAB.*${nombre}.*$TAB"
+                )
+            if [ -n "$result" ]; then
+                echo "$result" |
+                sed '
+                    s|\tPROMOCION|\tPROMOCIONÓ|;
+                    s|\tAUSENTE|\tLIBRE|;
+                    s|\tDESAPROBADO|\tINSUFICIENTE|;
+                    ' |
+                cut -d "$TAB" -f 1,2,7 |
+                column -t -s "$TAB"
+            else 
+                printf "NO ENCONTRADO: \033[7m%s\033[0m\n" "$nombre"
+            fi
+            ;;
+    esac
+    echo "----------------------------------------"
+done
