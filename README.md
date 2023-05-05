@@ -91,7 +91,8 @@ Para crear los exámenes se deben crear dos archivos:
 
 Para crear 3 modelos de examen (modelo *A*, *B* y *C*), y un modelo *0* que
 mantiene todas las preguntas y respuestas en el orden que aparecen en
-`exam-questions.xml`, ejecutar:
+`exam-questions.xml`, debo moverme hasta la carpeta que contiene los archivos
+`exam-questions.xml` y `template.tex`, luego ejecutar:
 
     export PATH="$PATH:$HOME/.local/bin"
     eyegrade-create -e exam-questions.xml -m 0ABC template.tex -o exam
