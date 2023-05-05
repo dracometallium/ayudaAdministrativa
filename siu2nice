@@ -1,5 +1,8 @@
 #!/bin/sh
 
+TAB=$(printf "\t")
+
+# shellcheck disable=SC2016
 rango='
 BEGIN{
     alumnos=0
@@ -21,6 +24,7 @@ BEGIN{
 '
 
 
+# shellcheck disable=SC2016
 formato='
 BEGIN{
     FS="\t"
@@ -53,8 +57,11 @@ libreoffice --headless --convert-to tsv:"Text - txt - csv (StarCalc)":9,34,UTF-8
 for i in "$tmpdir"/*; do
 
     from=$(file -b --mime-encoding "$i")
-    iconv -f $from -t "UTF-8" "$i" | awk "$rango"
+    iconv -f "$from" -t "UTF-8" "$i" | awk "$rango"
 
-done | awk "$formato" | sort | uniq
+done |
+    awk "$formato" |
+    sort -k 2 --field-separator="$TAB" |
+    uniq
 
 rm -rf "$tmpdir"
