@@ -21,7 +21,6 @@ Uso:
 Lamentablemente el script se tiene casi cada año por que el _siu_ cambia el
 formato de los resúmenes cuando se le da la gana.
 
-
 ### record_screen.sh
 
 `record_screen.sh` permite seleccionar un área de la pantalla para que sea
@@ -49,6 +48,11 @@ del alumno. En los archivos `res*` la tercera columna es la nota del parcial o
 recuperatorio correspondiente.
     
     ./listaFinal listaAlumnos res1p res1r res2p res2r >resultado.tsv
+
+### buscar
+
+`buscar` es un script que permite buscar rapidamente las notas de los alumnos
+para cargarlos en las actas de cursado, utilizando la terminologia del _siu_.
 
 # Eyegrade
 
