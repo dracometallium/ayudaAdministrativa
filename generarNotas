@@ -1,0 +1,153 @@
+#!/bin/sh
+
+TAB=$(printf "\t")
+
+isNum(){
+    if echo "$1" |
+        grep \
+            -e "^[0-9][0-9]*$" \
+            -e "^[0-9][0-9]*\.[0-9][0-9]*$" \
+            1>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+help(){
+echo "\
+'$0' crea a partir del archivo de notas generado por el 'eyegrade' dos
+archivos con las notas, uno en 'PDF' y el otro en 'TSV'. Requiere 'pandoc'
+para generar el 'PDF'.
+
+USO:
+    $0 notas.csv -A nota_aprobado [-P nota_promoción] [-o nombre_base]
+    $0 -h
+
+Descripción de las opciones:
+
+-A nota_aprobado
+--aprobado nota_aprobado
+    'nota_aprobado' es la nota mínima necesaria para aprobar. Puede ser un
+    número decimal (con punto, no coma).
+
+-P nota_promoción
+--promocion nota_promoción
+    'nota_aprobado' es la nota mínima necesaria para promocionar. Si se
+    ignora, no hay promoción. Puede ser un número decimal (con punto, no
+    coma).
+
+-o  nombre_base
+--out nombre_base
+    Establece el nombre base de los archivos de salida. En caso contrario se
+    utiliza como base el nombre del archivo con las notas del 'eyegrade'.
+
+-h
+--help
+    Muestra este mensaje."
+}
+
+notaAp="6.0"
+notaPr="100000000.0" # Por default una nota imposible de alcanzar.
+
+if [ "$#" -lt 1 ]; then
+    echo "Numero incorrecto de parametros" 1>&2
+    help 1>&2
+    exit 1
+else
+    inFile="$1"
+    outFile="${1%.*}"
+fi
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+fi
+
+shift
+
+while [ "0" != "$#" ]; do
+    case "$1" in
+        "-A"|"--aprobado")
+            if isNum "$2"; then
+                notaAp="$2"
+            else
+                echo "La nota de aprobado no es un número." 1>&2
+                help 1>&2
+                exit 1
+            fi
+            shift
+            ;;
+        "-P"|"--promocion")
+            if isNum "$2"; then
+                notaPr="$2"
+            else
+                echo "La nota de promoción no es un número." 1>&2
+                help 1>&2
+                exit 1
+            fi
+            shift
+            ;;
+        "-o"|"--out")
+            if [ -n "$2" ]; then
+                outFile="$2"
+            else
+                echo "El nombre base no esta definido." 1>&2
+                help 1>&2
+                exit 1
+            fi
+            shift
+            ;;
+        "--help"|"-h")
+            help
+            exit 0
+            ;;
+        *)
+            help 1>&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# shellcheck disable=SC2016
+prog='
+BEGIN{
+    FS=";"
+    OFS="\t"
+}
+
+(NR == 1){
+    if($1=="Id"){
+        next
+    }
+}
+
+{
+    if($3>=notaPr){
+        nota="P"
+    } else if($2>=notaAp){
+        nota="A"
+    } else {
+        nota="D"
+    }
+    print $1,$2,nota
+}
+'
+
+format='
+BEGIN{
+    FS="\t"
+    OFS=","
+}
+{
+    print $1,"\""$2"\"",$3
+}
+'
+
+<"$inFile" awk -v notaPr="$notaPr" -v notaAp="$notaAp" "$prog" |
+    tee "$outFile".tsv |
+    sort -k 2 --field-separator="$TAB" |
+    ( printf "Legajo\tNombre\tNota\n"; cat - ) |
+    awk "$format" |
+    pandoc -f csv - -t pdf -o "$outFile".pdf
