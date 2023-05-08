@@ -21,7 +21,7 @@ archivos con las notas, uno en 'PDF' y el otro en 'TSV'. Requiere 'pandoc'
 para generar el 'PDF'.
 
 USO:
-    $0 notas.csv -A nota_aprobado [-P nota_promoción] [-o nombre_base]
+    $0 notasEye.tsv [-A nota_aprobado] [-P nota_promoción] [-o nombre_base]
     $0 -h
 
 Descripción de las opciones:
@@ -29,7 +29,7 @@ Descripción de las opciones:
 -A nota_aprobado
 --aprobado nota_aprobado
     'nota_aprobado' es la nota mínima necesaria para aprobar. Puede ser un
-    número decimal (con punto, no coma).
+    número decimal (con punto, no coma). Por default 6.0.
 
 -P nota_promoción
 --promocion nota_promoción
@@ -40,7 +40,8 @@ Descripción de las opciones:
 -o  nombre_base
 --out nombre_base
     Establece el nombre base de los archivos de salida. En caso contrario se
-    utiliza como base el nombre del archivo con las notas del 'eyegrade'.
+    utiliza como base el nombre del archivo con las notas del 'eyegrade'
+    concatenado con '_new'.
 
 -h
 --help
@@ -56,7 +57,7 @@ if [ "$#" -lt 1 ]; then
     exit 1
 else
     inFile="$1"
-    outFile="${1%.*}"
+    outFile="${1%.*}_new"
 fi
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
@@ -113,7 +114,7 @@ done
 # shellcheck disable=SC2016
 prog='
 BEGIN{
-    FS=";"
+    FS="\t"
     OFS="\t"
 }
 
@@ -126,7 +127,7 @@ BEGIN{
 {
     if($3>=notaPr){
         nota="P"
-    } else if($2>=notaAp){
+    } else if($3>=notaAp){
         nota="A"
     } else {
         nota="D"
@@ -145,7 +146,8 @@ BEGIN{
 }
 '
 
-<"$inFile" awk -v notaPr="$notaPr" -v notaAp="$notaAp" "$prog" |
+<"$inFile" sed 's/\r$//'|
+    awk -v notaPr="$notaPr" -v notaAp="$notaAp" "$prog" |
     tee "$outFile".tsv |
     sort -k 2 --field-separator="$TAB" |
     ( printf "Legajo\tNombre\tNota\n"; cat - ) |
