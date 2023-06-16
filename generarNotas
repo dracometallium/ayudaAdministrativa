@@ -22,6 +22,7 @@ para generar el 'PDF'.
 
 USO:
     $0 notasEye.tsv [-A nota_aprobado] [-P nota_promoción] [-o nombre_base]
+    $0 notasParcial.tsv --pdf
     $0 -h
 
 Descripción de las opciones:
@@ -37,11 +38,16 @@ Descripción de las opciones:
     ignora, no hay promoción. Puede ser un número decimal (con punto, no
     coma).
 
--o  nombre_base
+-o nombre_base
 --out nombre_base
     Establece el nombre base de los archivos de salida. En caso contrario se
     utiliza como base el nombre del archivo con las notas del 'eyegrade'
     concatenado con '_new'.
+
+--pdf-only
+    Genera el 'pdf' a partir de el 'tsv' que ya tiene las notas de aprobado,
+    desaprobado y promocionado (A, D, y P). El archivo de salida tiene el
+    mismo nombre base que el de entrada. Incompatible con las otras opciones.
 
 -h
 --help
@@ -58,6 +64,7 @@ if [ "$#" -lt 1 ]; then
 else
     inFile="$1"
     outFile="${1%.*}_new"
+    pdfOnly=false
 fi
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
@@ -99,6 +106,15 @@ while [ "0" != "$#" ]; do
             fi
             shift
             ;;
+        "--pdf-only")
+            if [ "$#" -gt 1 ]; then
+                echo "--pdf-only es incompatible con las demas opciones." 1>&2
+                help 1>&2
+                exit 1
+            else
+                pdfOnly=true
+            fi
+            ;;
         "--help"|"-h")
             help
             exit 0
@@ -136,6 +152,7 @@ BEGIN{
 }
 '
 
+# shellcheck disable=SC2016
 format='
 BEGIN{
     FS="\t"
@@ -146,10 +163,23 @@ BEGIN{
 }
 '
 
-<"$inFile" sed 's/\r$//'|
-    awk -v notaPr="$notaPr" -v notaAp="$notaAp" "$prog" |
-    tee "$outFile".tsv |
+tsvFile(){
+    sed 's/\r$//' |
+    awk -v notaPr="$notaPr" -v notaAp="$notaAp" "$prog"
+}
+
+pdfFile(){
     sort -k 2 --field-separator="$TAB" |
     ( printf "Legajo\tNombre\tNota\n"; cat - ) |
     awk "$format" |
-    pandoc -f csv - -t pdf -o "$outFile".pdf
+    pandoc -f csv - -t pdf -o -
+}
+
+if [ "$pdfOnly" = true ]; then
+    outFile="${inFile%.*}"
+    <"$inFile" pdfFile > "$outFile".pdf
+else
+    <"$inFile" tsvFile |
+        tee "$outFile".tsv |
+        pdfFile > "$outFile".pdf
+fi
