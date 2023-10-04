@@ -6,7 +6,7 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-if [ -e "$1" ]; then
+if [ ! -e "$1" ]; then
     echo "Archivo $1 no encontrado." 1>&2
     exit 1
 fi
@@ -47,6 +47,7 @@ while read -r nombre; do
                     s|\tPROMOCION|\tPROMOCIONÓ|;
                     s|\tAUSENTE|\tLIBRE|;
                     s|\tDESAPROBADO|\tINSUFICIENTE|;
+                    s|\tAPROBADO|\tREGULAR|;
                     ' |
                 cut -d "$TAB" -f 1,2,7 |
                 column -t -s "$TAB"
