@@ -54,6 +54,21 @@ recuperatorio correspondiente.
 `buscar` es un script que permite buscar rapidamente las notas de los alumnos
 para cargarlos en las actas de cursado, utilizando la terminologia del _siu_.
 
+### totalNotas
+
+`totalNotas` resume la cantidad de aprobados, desaprobados y ausentes. Se le
+debe proveer el archivo de resultados generado por `listaFinal`.
+
+```
+$ ./totalNotas resultado.tsv
+-       Aprobados: 235 (47%)
+-       Desaprobados: 140 (28%)
+-       Ausentes: 118 (23%)
+-       Aus+Des: 258 (52%)
+-       Total: 493
+```
+
+
 # Eyegrade
 
 ## Instalación

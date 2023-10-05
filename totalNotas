@@ -1,0 +1,16 @@
+#!/usr/bin/awk -f
+
+BEGIN{FS="\t"}
+
+($7=="DESAPROBADO"){des++}
+($7=="APROBADO"||$7=="PROMOCION"){app++}
+($7=="AUSENTE"){aus++}
+{total++}
+
+END{
+    printf("-\tAprobados: %d (%d%%)\n", app , (app*100)/total)
+    printf("-\tDesaprobados: %d (%d%%)\n", des , (des*100)/total)
+    printf("-\tAusentes: %d (%d%%)\n", aus , (aus*100)/total)
+    printf("-\tAus+Des: %d (%d%%)\n", aus+des , ((aus+des)*100)/total)
+    printf("-\tTotal: %d\n", total)
+}
