@@ -7,10 +7,18 @@ rango='
 BEGIN{
     alumnos=0
     FS="\t"
+    OFS=FS
 }
 
-(!alumnos)&&/^ALUMNO/{
+(!alumnos)&&/^Legajo/{
     alumnos=1
+    print "AI"
+    next
+}
+
+(!alumnos)&&/^N°/{
+    alumnos=1
+    print "AC"
     next
 }
 
@@ -31,21 +39,36 @@ BEGIN{
     OFS=FS
 }
 
+(NR==1){
+    if($1=="AI"){
+        lr=1
+        nr=2
+    } else {
+        lr=2
+        nr=3
+    }
+    next
+}
+
+($lr==""){
+    next
+}
+
 {
-    leg_orig = $2
-    gsub(/.*-/,"",$2)
-    num_leg = sprintf("%06d", $2)
-    gsub("  *", " ", $1)
-    gsub("^ ", "", $1)
-    $1 = tolower($1)
-    split($1, nombres, " ")
+    leg_orig = $lr
+    gsub(/.*-/,"", $lr)
+    num_leg = sprintf("%06d", $lr)
+    gsub("  *", " ", $nr)
+    gsub("^ ", "", $nr)
+    $nr = tolower($nr)
+    split($nr, nombres, " ")
     nc=""
     for(i in nombres){
         n = nombres[i]
         sub(".", substr(toupper(n), 1,1) , n);
         nc = (nc " " n)
     }
-    gsub("^ ", "", nc)
+    sub("^ ", "", nc)
     print num_leg, nc, leg_orig
 }
 '
