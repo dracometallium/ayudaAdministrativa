@@ -17,12 +17,12 @@ isNum(){
 help(){
 echo "\
 '$0' crea a partir del archivo de notas generado por el 'eyegrade' dos
-archivos con las notas, uno en 'PDF' y el otro en 'TSV'. Requiere 'pandoc'
-para generar el 'PDF'.
+archivos con las notas, uno en 'PDF' y el otro en 'TSV'. El nombre del archivo
+debe ser siempre el primer parámetro. Requiere 'pandoc' para generar el 'PDF'.
 
 USO:
     $0 notasEye.tsv [-A nota_aprobado] [-P nota_promoción] [-o nombre_base]
-    $0 notasParcial.tsv --pdf
+    $0 notasParcial.tsv --pdf-only
     $0 -h
 
 Descripción de las opciones:
