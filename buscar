@@ -39,7 +39,7 @@ while read -r nombre; do
         *)
             result=$(
                 iconv -t ASCII//TRANSLIT "$1" |
-                    grep -i -e "$TAB.*${nombre}.*$TAB"
+                    grep -i -e "${nombre}.*$TAB"
                 )
             if [ -n "$result" ]; then
                 echo "$result" |
