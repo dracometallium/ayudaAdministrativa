@@ -22,6 +22,12 @@ BEGIN{
     next
 }
 
+(!alumnos)&&/^ALUMNO/{
+    alumnos=1
+    print "RC"
+    next
+}
+
 (!alumnos){
     next
 }
@@ -43,6 +49,9 @@ BEGIN{
     if($1=="AI"){
         lr=1
         nr=2
+    } else if($1=="RC") {
+        lr=2
+        nr=1
     } else {
         lr=2
         nr=3
