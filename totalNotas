@@ -11,6 +11,7 @@ END{
     printf("-\tAprobados: %d (%d%%)\n", app , (app*100)/total)
     printf("-\tDesaprobados: %d (%d%%)\n", des , (des*100)/total)
     printf("-\tAusentes: %d (%d%%)\n", aus , (aus*100)/total)
+    printf("-\tPresentes: %d (%d%%)\n", app+des , ((app+des)*100)/total)
     printf("-\tAus+Des: %d (%d%%)\n", aus+des , ((aus+des)*100)/total)
     printf("-\tTotal: %d\n", total)
 }
